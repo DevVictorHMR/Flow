@@ -10,22 +10,19 @@ namespace Flow.Infrastructure.Data
         public DbSet<User> User => Set<User>();
         public DbSet<Feedback> Feedbacks => Set<Feedback>();
 
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    base.OnModelCreating(modelBuilder); 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Feedback>()
+                .HasOne(f => f.Sender)
+                .WithMany()
+                .HasForeignKey(f => f.SenderId)
+                .OnDelete(DeleteBehavior.NoAction);
 
-        //    modelBuilder.Entity<Feedback>(entity =>
-        //    {
-        //        entity.HasOne(f => f.Sender)
-        //            .WithMany()
-        //            .HasForeignKey(f => f.SenderId)
-        //            .OnDelete(DeleteBehavior.NoAction); // <-- Desativa CASCADE
-
-        //        entity.HasOne(f => f.Receiver)
-        //            .WithMany()
-        //            .HasForeignKey(f => f.ReceiverId)
-        //            .OnDelete(DeleteBehavior.NoAction); // <-- Desativa CASCADE
-        //    });
-        //}
+            modelBuilder.Entity<Feedback>()
+                .HasOne(f => f.Receiver)
+                .WithMany()
+                .HasForeignKey(f => f.ReceiverId)
+                .OnDelete(DeleteBehavior.NoAction);
+        }
     }
 }

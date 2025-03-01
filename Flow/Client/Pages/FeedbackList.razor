@@ -1,0 +1,41 @@
+﻿@page "/feedbacks"
+@using Flow.Shared.Dtos
+@inject HttpClient Http
+
+<h3>Feedbacks Recebidos</h3>
+
+@if (feedbacks == null)
+{
+    <p>Carregando...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Remetente</th>
+                <th>Conteúdo</th>
+                <th>Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var feedback in feedbacks)
+            {
+                <tr>
+                    <td>@feedback.SenderName</td>
+                    <td>@feedback.Content</td>
+                    <td>@feedback.CreatedAt.ToShortDateString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<FeedbackDto> feedbacks = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        feedbacks = await Http.GetFromJsonAsync<List<FeedbackDto>>("api/feedbacks/received");
+    }
+}

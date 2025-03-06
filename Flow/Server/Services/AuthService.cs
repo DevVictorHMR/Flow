@@ -26,7 +26,7 @@ namespace Flow.Server.Services
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Name, user.Username)
             };
 
@@ -43,9 +43,13 @@ namespace Flow.Server.Services
 
         public async Task<User?> Authenticate(string username, string password)
         {
-            var user = await _context.User.FirstOrDefaultAsync(u => u.Username == username);
-            // Verificação de senha
-            return user?.PasswordHash == password ? user : null;
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+
+            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+                return null;
+
+            return user;
         }
+
     }
 }

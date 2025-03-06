@@ -29,7 +29,7 @@ namespace Flow.Server.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<FeedbackDto>> GetFeedbacksForUserAsync(string userId)
+        public async Task<List<FeedbackDto>> GetFeedbacksForUserAsync(string userId)
         {
             return await _context.Feedbacks
                 .Where(f => f.ReceiverId == userId)

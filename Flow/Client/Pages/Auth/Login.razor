@@ -1,0 +1,67 @@
+﻿@page "/login"
+@using Flow.Shared.Dtos
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject ILocalStorageService LocalStorage
+@inject AuthenticationStateProvider AuthStateProvider
+
+<div class="auth-container">
+    <h3>Login</h3>
+    
+    <EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label>Username</label>
+            <InputText @bind-Value="loginModel.Username" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <InputText type="password" @bind-Value="loginModel.Password" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Entrar</button>
+    </EditForm>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger mt-3">@errorMessage</div>
+    }
+</div>
+
+@code {
+    private LoginRequest loginModel = new();
+    private string errorMessage = string.Empty;
+
+    private async Task HandleLogin()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/auth/login", loginModel);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var token = await response.Content.ReadAsStringAsync();
+                await LocalStorage.SetItemAsync("authToken", token);
+                ((AuthStateProvider)AuthStateProvider).NotifyUserAuthentication(token);
+                Navigation.NavigateTo("/", forceLoad: true);
+            }
+            else
+            {
+                errorMessage = "Usuário ou senha inválidos";
+            }
+        }
+        catch
+        {
+            errorMessage = "Erro ao conectar com o servidor";
+        }
+    }
+
+    public class LoginRequest
+    {
+        public string Username { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+}

@@ -1,41 +1,59 @@
 ﻿@page "/feedbacks"
+@using Microsoft.AspNetCore.Authorization
+@using Flow.Core.Interfaces
 @using Flow.Shared.Dtos
+@attribute [Authorize]
 @inject HttpClient Http
+@inject IFeedbackService FeedbackService
 
-<h3>Feedbacks Recebidos</h3>
+<div class="feedbacks-container">
+    <h3>Feedbacks Recebidos</h3>
 
-@if (feedbacks == null)
-{
-    <p>Carregando...</p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Remetente</th>
-                <th>Conteúdo</th>
-                <th>Data</th>
-            </tr>
-        </thead>
-        <tbody>
+    @if (feedbacks == null)
+    {
+        <p>Carregando feedbacks...</p>
+    }
+    else if (!feedbacks.Any())
+    {
+        <p>Nenhum feedback recebido ainda</p>
+    }
+    else
+    {
+        <div class="feedback-list">
             @foreach (var feedback in feedbacks)
             {
-                <tr>
-                    <td>@feedback.SenderName</td>
-                    <td>@feedback.Content</td>
-                    <td>@feedback.CreatedAt.ToShortDateString()</td>
-                </tr>
+                <div class="feedback-card">
+                    <div class="feedback-header">
+                        <span class="sender">@feedback.SenderName</span>
+                        <span class="date">@feedback.CreatedAt.ToShortDateString()</span>
+                    </div>
+                    <div class="feedback-content">
+                        @feedback.Content
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
-}
+        </div>
+    }
+</div>
 
 @code {
     private List<FeedbackDto> feedbacks = new();
 
     protected override async Task OnInitializedAsync()
     {
-        feedbacks = await Http.GetFromJsonAsync<List<FeedbackDto>>("api/feedbacks/received");
+        try
+        {
+            // Obter feedbacks via API
+            var response = await Http.GetAsync("api/feedbacks/received");
+
+            if (response.IsSuccessStatusCode)
+            {
+                feedbacks = await response.Content.ReadFromJsonAsync<List<FeedbackDto>>();
+            }
+        }
+        catch
+        {
+            // Tratar erro
+        }
     }
 }

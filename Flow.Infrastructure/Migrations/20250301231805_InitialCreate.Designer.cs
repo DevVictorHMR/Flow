@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Flow.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250301011456_InitialCreate")]
+    [Migration("20250301231805_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -76,7 +76,7 @@ namespace Flow.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Flow.Core.Entities.Feedback", b =>

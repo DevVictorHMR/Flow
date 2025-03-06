@@ -12,7 +12,7 @@ namespace Flow.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "User",
+                name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -22,7 +22,7 @@ namespace Flow.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_User", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -40,14 +40,14 @@ namespace Flow.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Feedbacks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Feedbacks_User_ReceiverId",
+                        name: "FK_Feedbacks_Users_ReceiverId",
                         column: x => x.ReceiverId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Feedbacks_User_SenderId",
+                        name: "FK_Feedbacks_Users_SenderId",
                         column: x => x.SenderId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id");
                 });
 
@@ -69,7 +69,7 @@ namespace Flow.Infrastructure.Migrations
                 name: "Feedbacks");
 
             migrationBuilder.DropTable(
-                name: "User");
+                name: "Users");
         }
     }
 }

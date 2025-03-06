@@ -73,7 +73,7 @@ namespace Flow.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Flow.Core.Entities.Feedback", b =>

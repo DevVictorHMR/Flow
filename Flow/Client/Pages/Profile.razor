@@ -1,0 +1,47 @@
+﻿@page "/profile"
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+
+<div class="profile-container">
+    <h3>Meu Perfil</h3>
+    
+    @if (user == null)
+    {
+        <p>Carregando...</p>
+    }
+    else
+    {
+        <div class="profile-info">
+            <div class="info-item">
+                <label>Nome:</label>
+                <span>@user.FullName</span>
+            </div>
+            <div class="info-item">
+                <label>Username:</label>
+                <span>@user.Username</span>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private UserProfileDto? user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            user = await Http.GetFromJsonAsync<UserProfileDto>("api/auth/profile");
+        }
+        catch
+        {
+            // Tratar erro
+        }
+    }
+
+    public class UserProfileDto
+    {
+        public string FullName { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
+    }
+}

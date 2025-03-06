@@ -2,6 +2,8 @@
 using Flow.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Crypto.Generators;
+using Flow.Infrastructure.Data;
 
 namespace Flow.Server.Controllers
 {
@@ -10,9 +12,9 @@ namespace Flow.Server.Controllers
     public class AuthController : ControllerBase
     {
         private readonly AuthService _authService;
-        private readonly DbContext _context;
+        private readonly AppDbContext _context;
 
-        public AuthController(AuthService authService, DbContext context)
+        public AuthController(AuthService authService, AppDbContext context)   
         {
             _authService = authService;
             _context = context;
@@ -31,8 +33,8 @@ namespace Flow.Server.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] User newUser)
         {
-            // Validar e criptografar senha
-            _context.Set<User>().Add(newUser);
+            newUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newUser.PasswordHash);
+            _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
             return Ok();
         }

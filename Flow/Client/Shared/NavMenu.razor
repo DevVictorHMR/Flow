@@ -1,4 +1,10 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Blazored.LocalStorage
+@inject ILocalStorageService LocalStorage
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Flow</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -14,16 +20,38 @@
                 <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="feedbacks">
-                <span class="oi oi-chat" aria-hidden="true"></span> Feedbacks
-            </NavLink>
-        </div>
+
+        <AuthorizeView>
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="feedbacks">
+                        <span class="oi oi-chat" aria-hidden="true"></span> Feedbacks
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="profile">
+                        <span class="oi oi-person" aria-hidden="true"></span> Perfil
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <button class="btn btn-link nav-link" @onclick="Logout">
+                        <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
+                    </button>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="login">
+                        <span class="oi oi-account-login" aria-hidden="true"></span> Login
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="register">
+                        <span class="oi oi-person" aria-hidden="true"></span> Registrar
+                    </NavLink>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
     </nav>
 </div>
 
@@ -32,8 +60,19 @@
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    private void ToggleNavMenu()
+    private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
+
+    private async Task Logout()
     {
-        collapseNavMenu = !collapseNavMenu;
+        try
+        {
+            await LocalStorage.RemoveItemAsync("authToken");
+            ((AuthStateProvider)AuthStateProvider).NotifyUserAuthentication(null);
+            Navigation.NavigateTo("/", forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro durante logout: {ex.Message}");
+        }
     }
 }

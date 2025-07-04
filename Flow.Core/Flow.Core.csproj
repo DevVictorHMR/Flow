@@ -8,10 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services\" />
+    <PackageReference Include="XAct.Core.PCL" Version="0.0.5014" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,5 +1,6 @@
 ﻿using Flow.Core.Interfaces;
 using Flow.Server.Services;
+using XAct.Messages;
 using Flow.Shared.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,12 +28,18 @@ namespace Flow.Server.Controllers
         }
 
         [HttpGet("received")]
-        public async Task<IActionResult> GetFeedbacks()
+        public async Task<IActionResult> GetFeedbacks([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            var feedbacks = await _feedbackService.GetFeedbacksForUserAsync(userId!);
-            return Ok(feedbacks);
+            var response = await _feedbackService.GetFeedbacksForUserAsync(userId!, pageNumber, pageSize);
+            return Ok(response);
         }
 
+        [HttpPost("flowbits")]
+        public async Task<IActionResult> AddFlowbits([FromBody] FlowbitsDto flowbitsDto)
+        {
+            await _feedbackService.AddFlowbitsAsync(flowbitsDto);
+            return Ok();
+        }
     }
 }

@@ -10,6 +10,7 @@ namespace Flow.Infrastructure.Data
         public AppDbContext() : base() { }
         public DbSet<User> Users => Set<User>();
         public DbSet<Feedback> Feedbacks => Set<Feedback>();
+        public DbSet<Badge> Badges => Set<Badge>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
